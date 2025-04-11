@@ -19,6 +19,101 @@ function showSurveyStep(step) {
   }
   const current = document.getElementById(`survey-step-${step}`);
   if (current) current.style.display = "block";
+  
+  // 如果是最后一步，添加管理偏好雷达图
+  if (step === 3) {
+    drawPreferenceRadar();
+  }
+}
+
+// 绘制用户管理偏好雷达图
+function drawPreferenceRadar() {
+  // 检查是否已经存在雷达图，如果存在则不重新创建
+  if (document.getElementById('preferenceRadar')) {
+    return;
+  }
+  
+  // 获取所有用户输入
+  const preferences = {
+    objectives: [
+      parseInt(document.getElementById('cost').value),
+      parseInt(document.getElementById('time').value),
+      parseInt(document.getElementById('quality').value),
+      parseInt(document.getElementById('quantity').value),
+      parseInt(document.getElementById('location').value),
+      parseInt(document.getElementById('sustainable').value)
+    ],
+    difficulties: [
+      parseInt(document.getElementById('risk').value),
+      parseInt(document.getElementById('complexity').value),
+      parseInt(document.getElementById('conflicting').value),
+      parseInt(document.getElementById('variation').value)
+    ],
+    decisionLevels: [
+      parseInt(document.getElementById('operational').value),
+      parseInt(document.getElementById('tactical').value),
+      parseInt(document.getElementById('strategic').value)
+    ]
+  };
+  
+  // 获取当前语言
+  const currentLang = localStorage.getItem('selectedLanguage') || 'en';
+  const labels = currentLang === 'zh' ? 
+    ['成本', '时间', '质量', '数量', '位置', '可持续性', '风险', '复杂性', '冲突目标', '时间变异', '运营', '战术', '战略'] :
+    ['Cost', 'Time', 'Quality', 'Quantity', 'Location', 'Sustainability', 'Risk', 'Complexity', 'Conflicting Obj.', 'Time Variation', 'Operational', 'Tactical', 'Strategic'];
+    
+  const preferenceTitle = currentLang === 'zh' ? '我的管理偏好' : 'My Management Preferences';
+  
+  // 创建雷达图容器
+  const preferenceChartContainer = document.createElement('div');
+  preferenceChartContainer.className = 'preference-chart';
+  preferenceChartContainer.innerHTML = `<h4>${preferenceTitle}</h4>`;
+  
+  const canvas = document.createElement('canvas');
+  canvas.id = 'preferenceRadar';
+  preferenceChartContainer.appendChild(canvas);
+  
+  // 添加到页面
+  document.getElementById('survey-step-3').appendChild(preferenceChartContainer);
+  
+  // 创建雷达图
+  new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: preferenceTitle,
+        data: [
+          ...preferences.objectives,
+          ...preferences.difficulties,
+          ...preferences.decisionLevels
+        ],
+        fill: true,
+        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+        borderColor: 'rgb(54, 162, 235)',
+        pointBackgroundColor: 'rgb(54, 162, 235)',
+        pointBorderColor: '#fff',
+        pointHoverBackgroundColor: '#fff',
+        pointHoverBorderColor: 'rgb(54, 162, 235)'
+      }]
+    },
+    options: {
+      elements: {
+        line: {
+          borderWidth: 3
+        }
+      },
+      scales: {
+        r: {
+          angleLines: {
+            display: true
+          },
+          suggestedMin: 0,
+          suggestedMax: 5
+        }
+      }
+    }
+  });
 }
 
 // 跳转到下一页问卷
@@ -103,9 +198,13 @@ function loadDataAndRecommend() {
     fetch("./data/industry-cluster-distribution.json").then(res => {
       if (!res.ok) throw new Error(`Industry distribution: ${res.status}`);
       return res.json();
+    }),
+    fetch("./data/tool-details.json").then(res => {
+      if (!res.ok) throw new Error(`Tool details: ${res.status}`);
+      return res.json();
     })
   ])
-    .then(([literatureScores, industryPrefs, enterprisePatterns, industryDist]) => {
+    .then(([literatureScores, industryPrefs, enterprisePatterns, industryDist, toolDetails]) => {
       console.log("数据加载成功");
       try {
         const industry = document.getElementById("industry").value;
@@ -141,6 +240,7 @@ function loadDataAndRecommend() {
               // 继续计算，使用默认值0
             }
 
+            // 计算各类得分
             const sumT = (W.cost * (R.cost || 0)) +
                         (W.time * (R.time || 0)) +
                         (W.quality * (R.quality || 0)) +
@@ -156,11 +256,40 @@ function loadDataAndRecommend() {
             const sumD = (W.operational * (R.operational || 0)) +
                         (W.tactical * (R.tactical || 0)) +
                         (W.strategic * (R.strategic || 0));
+            
+            // 标准化各部分得分
+            const objectivesScore = sumT / 30; // 6个目标，每个最高5分
+            const difficultiesScore = sumC / 20; // 4个难度，每个最高5分
+            const decisionsScore = sumD / 15; // 3个决策层级，每个最高5分
 
             const score = 0.25 * sumT + 0.25 * sumC + 0.25 * sumD + 0.15 * P + 0.10 * C;
             
+            // 保存得分细分
+            const scoreBreakdown = {
+              objectives: objectivesScore,
+              difficulties: difficultiesScore,
+              decisions: decisionsScore,
+              industry: P,
+              enterprise: C
+            };
+            
+            // 创建工具能力对象 (用于雷达图)
+            const toolCapabilities = {
+              cost: R.cost || 0,
+              time: R.time || 0,
+              quality: R.quality || 0,
+              risk: R.risk || 0,
+              operational: R.operational || 0,
+              strategic: R.strategic || 0
+            };
+            
             console.log(`${tool} 得分:`, score);
-            return { tool, score: parseFloat(score.toFixed(4)) };
+            return { 
+              tool, 
+              score: parseFloat(score.toFixed(4)),
+              scoreBreakdown,
+              toolCapabilities
+            };
           } catch (toolError) {
             console.error(`处理工具 ${tool} 时出错:`, toolError);
             return { tool, score: 0 }; // 返回0分，确保流程不中断
@@ -169,7 +298,7 @@ function loadDataAndRecommend() {
 
         finalScores.sort((a, b) => b.score - a.score);
         console.log("排序后的分数:", finalScores);
-        renderResults(finalScores);
+        renderResults(finalScores, toolDetails);
       } catch (error) {
         console.error("计算推荐结果时出错:", error);
         document.getElementById("loading").style.display = "none";
@@ -184,62 +313,286 @@ function loadDataAndRecommend() {
 }
 
 // 推荐结果展示
-function renderResults(scores) {
+function renderResults(scores, toolDetails) {
   try {
-    const top = scores.slice(0, 3);
+    const currentLang = localStorage.getItem("selectedLanguage") || "en";
+    const top3 = scores.slice(0, 3);
     const container = document.getElementById("recommendation-container");
     
     if (!container) {
       throw new Error("未找到结果容器元素");
     }
     
-    container.innerHTML =
-      "<h3>Top 3 Recommended Tools</h3><ol>" +
-      top.map(t => `<li><strong>${t.tool}</strong> - <span class="score">${t.score}</span></li>`).join("") +
-      "</ol>";
-
-    console.log("创建图表...");
-    const ctx = document.createElement("canvas");
-    container.appendChild(ctx);
-
-    // 最多显示所有工具，或者只显示前6个
-    const displayTools = scores.slice(0, Math.min(scores.length, 6));
-
-    new Chart(ctx, {
+    // 创建顶部标题和介绍
+    const title = currentLang === 'zh' ? '推荐工具' : 'Recommended Tools';
+    const intro = currentLang === 'zh' ? 
+      '基于您的管理偏好，以下是最适合您的供应链数字工具：' : 
+      'Based on your management preferences, here are the digital tools that best match your supply chain needs:';
+    
+    container.innerHTML = `<h3>${title}</h3><p>${intro}</p>`;
+    
+    // 创建Top3工具对比图
+    const topChartContainer = document.createElement('div');
+    topChartContainer.className = 'chart-container';
+    const topCanvas = document.createElement('canvas');
+    topCanvas.id = 'top3Chart';
+    topChartContainer.appendChild(topCanvas);
+    container.appendChild(topChartContainer);
+    
+    // 绘制Top3柱状图
+    const chartTitle = currentLang === 'zh' ? 'Top 3 推荐工具' : 'Top 3 Recommended Tools';
+    const matchScore = currentLang === 'zh' ? '匹配度' : 'Match Score';
+    
+    new Chart(topCanvas, {
       type: "bar",
       data: {
-        labels: displayTools.map(s => s.tool),
+        labels: top3.map(s => s.tool),
         datasets: [{
-          label: "Score",
-          data: displayTools.map(s => s.score),
+          label: matchScore,
+          data: top3.map(s => s.score),
           backgroundColor: [
-            'rgba(75, 192, 192, 0.6)',
-            'rgba(54, 162, 235, 0.6)',
-            'rgba(153, 102, 255, 0.6)',
-            'rgba(255, 159, 64, 0.6)',
-            'rgba(255, 99, 132, 0.6)',
-            'rgba(255, 206, 86, 0.6)'
-          ]
+            'rgba(75, 192, 192, 0.7)',
+            'rgba(54, 162, 235, 0.7)',
+            'rgba(153, 102, 255, 0.7)'
+          ],
+          borderColor: [
+            'rgb(75, 192, 192)',
+            'rgb(54, 162, 235)',
+            'rgb(153, 102, 255)'
+          ],
+          borderWidth: 1
         }]
       },
       options: {
         responsive: true,
+        plugins: {
+          title: {
+            display: true,
+            text: chartTitle
+          },
+          legend: {
+            display: false
+          }
+        },
         scales: {
           y: { 
-            beginAtZero: true, 
-            max: Math.ceil(Math.max(...scores.map(s => s.score)) * 10) / 10 // 动态设置最大值
+            beginAtZero: true,
+            max: 1,
+            title: {
+              display: true,
+              text: matchScore
+            }
           }
         }
       }
     });
-
-    console.log("图表创建完成");
+    
+    // 创建详细推荐卡片
+    const detailsContainer = document.createElement('div');
+    detailsContainer.className = 'recommendation-details';
+    container.appendChild(detailsContainer);
+    
+    // 文本翻译
+    const viewDetails = currentLang === 'zh' ? '查看详情' : 'View Details';
+    const collapse = currentLang === 'zh' ? '收起' : 'Collapse';
+    const description = currentLang === 'zh' ? '描述' : 'Description';
+    const applications = currentLang === 'zh' ? '应用场景' : 'Applications';
+    const cases = currentLang === 'zh' ? '成功案例' : 'Case Studies';
+    const scoreStructure = currentLang === 'zh' ? '得分结构' : 'Score Breakdown';
+    const prefMatch = currentLang === 'zh' ? '偏好匹配' : 'Preference Match';
+    
+    // 为每个工具创建详细信息卡片
+    top3.forEach((tool, index) => {
+      const details = toolDetails[tool.tool] ? 
+                     toolDetails[tool.tool][currentLang] : 
+                     { 
+                       fullName: tool.tool, 
+                       description: currentLang === 'zh' ? "数字化供应链工具" : "Digital supply chain tool", 
+                       applications: currentLang === 'zh' ? "供应链管理" : "Supply chain management", 
+                       cases: currentLang === 'zh' ? "多家企业成功应用" : "Various enterprise implementations" 
+                     };
+      
+      const card = document.createElement('div');
+      card.className = 'tool-card';
+      card.innerHTML = `
+        <div class="tool-header">
+          <h4>${index + 1}. ${details.fullName} (${tool.tool})</h4>
+          <span class="score">${currentLang === 'zh' ? '匹配度' : 'Match score'}: ${(tool.score * 100).toFixed(1)}%</span>
+          <button class="expand-btn">${viewDetails}</button>
+        </div>
+        <div class="tool-details" style="display:none;">
+          <p><strong>${description}:</strong> ${details.description}</p>
+          <p><strong>${applications}:</strong> ${details.applications}</p>
+          <p><strong>${cases}:</strong> ${details.cases}</p>
+          <div class="charts-container">
+            <div class="score-breakdown">
+              <h5>${scoreStructure}</h5>
+              <canvas id="breakdown-${tool.tool}"></canvas>
+            </div>
+            <div class="comparison-radar">
+              <h5>${prefMatch}</h5>
+              <canvas id="radar-${tool.tool}"></canvas>
+            </div>
+          </div>
+        </div>
+      `;
+      detailsContainer.appendChild(card);
+      
+      // 添加展开/折叠功能
+      const expandBtn = card.querySelector('.expand-btn');
+      const detailsDiv = card.querySelector('.tool-details');
+      
+      expandBtn.addEventListener('click', function() {
+        const isHidden = detailsDiv.style.display === 'none';
+        detailsDiv.style.display = isHidden ? 'block' : 'none';
+        expandBtn.textContent = isHidden ? collapse : viewDetails;
+        
+        // 首次展开时创建图表
+        if (isHidden && !card.dataset.chartsCreated) {
+          setTimeout(() => {
+            createScoreBreakdownChart(tool.tool, tool.scoreBreakdown, currentLang);
+            createMatchRadarChart(tool.tool, tool.toolCapabilities, currentLang);
+            card.dataset.chartsCreated = 'true';
+          }, 50);
+        }
+      });
+    });
+    
     document.getElementById("loading").style.display = "none";
   } catch (error) {
     console.error("渲染结果时出错:", error);
     document.getElementById("loading").style.display = "none";
     alert("无法显示结果: " + error.message);
   }
+}
+
+// 创建得分结构柱状图
+function createScoreBreakdownChart(toolId, breakdown, lang) {
+  // 如果没有实际的得分细分数据，创建模拟数据
+  const data = breakdown || {
+    objectives: 0.75,
+    difficulties: 0.68,
+    decisions: 0.82,
+    industry: 0.79,
+    enterprise: 0.64
+  };
+  
+  const canvas = document.getElementById(`breakdown-${toolId}`);
+  if (!canvas) return;
+  
+  // 准备标签
+  const labels = lang === 'zh' ? 
+    ['目标', '难度', '决策层级', '行业匹配', '企业模式'] :
+    ['Objectives', 'Difficulties', 'Decision Levels', 'Industry Match', 'Enterprise Pattern'];
+  
+  new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: lang === 'zh' ? '得分' : 'Score',
+        data: Object.values(data),
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)'
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: {
+          beginAtZero: true,
+          max: 1
+        }
+      },
+      plugins: {
+        legend: {
+          display: false
+        }
+      }
+    }
+  });
+}
+
+// 创建用户偏好vs工具能力雷达图
+function createMatchRadarChart(toolId, capabilities, lang) {
+  // 如果没有工具能力数据，创建模拟数据
+  const toolData = capabilities || {
+    cost: 0.8,
+    time: 0.7,
+    quality: 0.9,
+    risk: 0.6,
+    operational: 0.85,
+    strategic: 0.75
+  };
+  
+  // 获取用户偏好数据 (标准化到0-1)
+  const userPreferences = {
+    cost: parseInt(document.getElementById('cost').value) / 5,
+    time: parseInt(document.getElementById('time').value) / 5,
+    quality: parseInt(document.getElementById('quality').value) / 5,
+    risk: parseInt(document.getElementById('risk').value) / 5,
+    operational: parseInt(document.getElementById('operational').value) / 5,
+    strategic: parseInt(document.getElementById('strategic').value) / 5
+  };
+  
+  const canvas = document.getElementById(`radar-${toolId}`);
+  if (!canvas) return;
+  
+  // 准备标签和图例
+  const labels = lang === 'zh' ? 
+    ['成本', '时间', '质量', '风险', '运营', '战略'] :
+    ['Cost', 'Time', 'Quality', 'Risk', 'Operational', 'Strategic'];
+  
+  const userPrefLabel = lang === 'zh' ? '用户偏好' : 'User Preference';
+  const toolCapabilityLabel = lang === 'zh' ? '工具能力' : 'Tool Capability';
+  
+  new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: labels,
+      datasets: [
+        {
+          label: userPrefLabel,
+          data: Object.values(userPreferences),
+          fill: true,
+          backgroundColor: 'rgba(54, 162, 235, 0.2)',
+          borderColor: 'rgb(54, 162, 235)',
+          pointBackgroundColor: 'rgb(54, 162, 235)',
+          pointBorderColor: '#fff'
+        },
+        {
+          label: toolCapabilityLabel,
+          data: Object.values(toolData),
+          fill: true,
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgb(255, 99, 132)',
+          pointBackgroundColor: 'rgb(255, 99, 132)',
+          pointBorderColor: '#fff'
+        }
+      ]
+    },
+    options: {
+      elements: {
+        line: {
+          borderWidth: 2
+        }
+      },
+      scales: {
+        r: {
+          angleLines: {
+            display: true
+          },
+          suggestedMin: 0,
+          suggestedMax: 1
+        }
+      }
+    }
+  });
 }
 
 // 匹配最佳企业聚类
