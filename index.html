@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Supply Chain Digital Tool Recommendation System" />
+  <title data-i18n="title">Digital Tool Recommendation</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header>
+    <h1 data-i18n="header">Supply Chain Digital Tool Recommendation</h1>
+    <nav>
+      <button onclick="switchLanguage('en')" aria-pressed="true">EN</button>
+      <button onclick="switchLanguage('zh')" aria-pressed="false">中文</button>
+    </nav>
+  </header>
+  
+  <main>
+    <section id="home">
+      <h2 data-i18n="slogan">Empowering Your Digital Supply Chain</h2>
+      <p data-i18n="intro">This system recommends digital tools based on your company's supply chain priorities and industry profile.</p>
+      <button onclick="scrollToInput()" data-i18n="cta" class="primary-button">Start Now</button>
+    </section>
+    
+    <section id="input" style="display: none">
+      <h3 data-i18n="form_title">Tell Us About Your Company</h3>
+      <form id="company-form">
+        <div class="form-group">
+          <label for="industry" data-i18n="industry">Industry:</label>
+          <select id="industry" name="industry" required>
+            <option value="Pharmaceuticals & Chemical">Pharmaceuticals & Chemical</option>
+            <option value="Retail">Retail</option>
+            <option value="Technology & Automotive">Technology & Automotive</option>
+            <option value="FMCG & Food">FMCG & Food</option>
+            <option value="Logistics">Logistics</option>
+            <option value="Manufacturing">Manufacturing</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="budget" data-i18n="budget">Annual Digitalization Budget:</label>
+          <select id="budget" name="budget" required>
+            <option value="low">Less than $50,000</option>
+            <option value="medium-low">$50,000 - $150,000</option>
+            <option value="medium-high">$150,000 - $500,000</option>
+            <option value="high">More than $500,000</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="adopted" data-i18n="adopted">Have you adopted digital tools?</label>
+          <select id="adopted" name="adopted" required>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </div>
+        
+        <button type="button" onclick="showSurvey()" class="primary-button">Next</button>
+      </form>
+      
+      <div id="survey3" style="display: none">
+        <h3>Rate the importance of the following supply chain aspects:</h3>
+        
+        <div class="survey-section">
+          <h4>Objectives</h4>
+          <div class="slider-group">
+            <label for="cost">Cost</label>
+            <input type="range" id="cost" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="time">Time</label>
+            <input type="range" id="time" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="quality">Quality</label>
+            <input type="range" id="quality" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="quantity">Quantity</label>
+            <input type="range" id="quantity" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="location">Location</label>
+            <input type="range" id="location" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="sustainable">Sustainability</label>
+            <input type="range" id="sustainable" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+        </div>
+        
+        <div class="survey-section">
+          <h4>Difficulties</h4>
+          <div class="slider-group">
+            <label for="risk">Risk</label>
+            <input type="range" id="risk" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="complexity">Complexity</label>
+            <input type="range" id="complexity" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="conflicting">Conflicting Objectives</label>
+            <input type="range" id="conflicting" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="variation">Variation Over Time</label>
+            <input type="range" id="variation" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+        </div>
+        
+        <div class="survey-section">
+          <h4>Decision-Making Level</h4>
+          <div class="slider-group">
+            <label for="operational">Operational Level</label>
+            <input type="range" id="operational" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="tactical">Tactical Level</label>
+            <input type="range" id="tactical" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+          
+          <div class="slider-group">
+            <label for="strategic">Strategic Level</label>
+            <input type="range" id="strategic" min="1" max="5" value="3" />
+            <span class="slider-value">3</span>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button type="button" onclick="backToCompanyInfo()" class="secondary-button">Back</button>
+          <button type="button" onclick="collectScores()" data-i18n="next" class="primary-button">Submit</button>
+        </div>
+      </div>
+    </section>
+    
+    <section id="results" style="display: none">
+      <div id="loading" style="display:none">
+        <p>Calculating your personalized recommendations...</p>
+        <div class="loader"></div>
+      </div>
+      <div id="recommendation-container"></div>
+      <button type="button" onclick="startOver()" class="secondary-button">Start Over</button>
+    </section>
+  </main>
+  
+  <footer>
+    <p data-i18n="contact">Contact us at: awenlu@outlook.com</p>
+  </footer>
+  
+  <script src="main.js"></script>
+  <script>
+    // Initialize slider value displays
+    document.addEventListener('DOMContentLoaded', function() {
+      const sliders = document.querySelectorAll('input[type="range"]');
+      sliders.forEach(slider => {
+        // Set initial value display
+        const valueDisplay = slider.nextElementSibling;
+        if (valueDisplay && valueDisplay.classList.contains('slider-value')) {
+          valueDisplay.textContent = slider.value;
+        }
+        
+        // Update value on slider change
+        slider.addEventListener('input', function() {
+          const valueDisplay = this.nextElementSibling;
+          if (valueDisplay && valueDisplay.classList.contains('slider-value')) {
+            valueDisplay.textContent = this.value;
+          }
+        });
+      });
+    });
+    
+    // Navigation functions
+    function showSurvey() {
+      document.getElementById('company-form').style.display = 'none';
+      document.getElementById('survey3').style.display = 'block';
+    }
+    
+    function backToCompanyInfo() {
+      document.getElementById('company-form').style.display = 'block';
+      document.getElementById('survey3').style.display = 'none';
+    }
+    
+    function startOver() {
+      document.getElementById('results').style.display = 'none';
+      document.getElementById('home').style.display = 'block';
+      document.getElementById('input').style.display = 'none';
+      
+      // Reset forms
+      document.getElementById('company-form').reset();
+      const sliders = document.querySelectorAll('input[type="range"]');
+      sliders.forEach(slider => {
+        slider.value = 3;
+        const valueDisplay = slider.nextElementSibling;
+        if (valueDisplay && valueDisplay.classList.contains('slider-value')) {
+          valueDisplay.textContent = '3';
+        }
+      });
+    }
+  </script>
+</body>
+</html>
