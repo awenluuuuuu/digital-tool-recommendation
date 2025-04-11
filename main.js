@@ -15,8 +15,13 @@ const translations = {
     budget: "Annual Digitalization Budget:",
     adopted: "Have you adopted digital tools?",
     next: "Next",
+    back: "Back",
+    submit: "Submit",
     result_title: "Recommended Tools",
-    score_structure: "Score Composition"
+    score_structure: "Score Composition",
+    obj_q: "Please evaluate the importance of the following supply chain management objectives.",
+    diff_q: "Please evaluate the importance of addressing the following supply chain difficulties.",
+    dec_q: "Please evaluate the importance of the following supply chain decision-making levels."
   },
   zh: {
     title: "数字化工具推荐系统",
@@ -33,8 +38,13 @@ const translations = {
     budget: "年度数字化预算：",
     adopted: "贵公司是否已经采用数字工具？",
     next: "下一步",
+    back: "上一步",
+    submit: "提交",
     result_title: "推荐的数字工具",
-    score_structure: "评分结构组成"
+    score_structure: "评分结构组成",
+    obj_q: "请根据您公司的实际情况，评估完成以下各供应链管理目标的重要程度。",
+    diff_q: "请根据您公司的实际情况，评估解决以下各供应链管理困难的重要程度。",
+    dec_q: "根据您公司的实际情况，请您对以下各供应链管理决策层级的重视程度。"
   }
 };
 
@@ -48,6 +58,33 @@ function switchLanguage(lang) {
   localStorage.setItem('selectedLanguage', lang);
 }
 
+let currentStep = 1;
+
+function startSurvey() {
+  document.getElementById('company-form').style.display = 'none';
+  showSurveyStep(1);
+}
+
+function showSurveyStep(step) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById(`survey-step-${i}`).style.display = 'none';
+  }
+  document.getElementById(`survey-step-${step}`).style.display = 'block';
+  currentStep = step;
+}
+
+function nextStep() {
+  if (currentStep < 3) {
+    showSurveyStep(currentStep + 1);
+  }
+}
+
+function prevStep() {
+  if (currentStep > 1) {
+    showSurveyStep(currentStep - 1);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const savedLang = localStorage.getItem('selectedLanguage') || 'en';
   switchLanguage(savedLang);
@@ -55,6 +92,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function scrollToInput() {
   document.getElementById("input").style.display = "block";
+  document.getElementById("company-form").style.display = "block";
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById(`survey-step-${i}`).style.display = 'none';
+  }
   document.getElementById("input").scrollIntoView({ behavior: "smooth" });
 }
 
@@ -64,11 +105,10 @@ let R_j, P_H, C_k;
 async function loadDataAndRecommend() {
   try {
     const [rj, ph, ck, clusterDist] = await Promise.all([
-      fetch("data/literature-scores.json").then(res => res.json()),
-      fetch("data/industry-preferences.json").then(res => res.json()),
-      fetch("data/enterprise-patterns.json").then(res => res.json()),
-      fetch("data/industry-cluster-distribution.json").then(res => res.json())
-    ]);
+      fetch("/digital-tool-recommendation/data/literature-scores.json").then(res => res.json()),
+      fetch("/digital-tool-recommendation/data/industry-preferences.json").then(res => res.json()),
+      fetch("/digital-tool-recommendation/data/enterprise-patterns.json").then(res => res.json()),
+      fetch("/digital-tool-recommendation/data/industry-cluster-distribution.json").then(res => res.json())    ]);
 
     R_j = rj;
     const industry = document.querySelector("select[name='industry']").value;
@@ -78,13 +118,15 @@ async function loadDataAndRecommend() {
       .sort((a, b) => b[1] - a[1])[0][0];
     C_k = ck[bestCluster];
 
-    startSurvey();
+    startScoreComputation();
   } catch (e) {
     console.error("Error loading data:", e);
+    alert("Failed to load recommendation data: " + e.message);
   }
 }
 
 function collectScores() {
+  document.getElementById('loading').style.display = 'block';
   const W = {
     cost: parseInt(document.getElementById('cost').value),
     time: parseInt(document.getElementById('time').value),
@@ -101,44 +143,38 @@ function collectScores() {
     strategic: parseInt(document.getElementById('strategic').value),
   };
   window.W = W;
+  document.getElementById('input').style.display = 'none';
   document.getElementById('results').style.display = 'block';
-  document.getElementById('survey3').style.display = 'none';
   loadDataAndRecommend();
 }
 
-function startSurvey() {
+function startScoreComputation() {
   const W = window.W;
   const alpha = 0.25, beta = 0.25, gamma = 0.25, delta = 0.15, epsilon = 0.10;
-
   const scores = tools.map(tool => {
     let sumT = W.cost * R_j[tool].cost + W.time * R_j[tool].time + W.quality * R_j[tool].quality +
                W.quantity * R_j[tool].quantity + W.location * R_j[tool].location + W.sustainable * R_j[tool].sustainable;
     let sumC = W.risk * R_j[tool].risk + W.complexity * R_j[tool].complexity +
                W.conflicting * R_j[tool].conflicting + W.variation * R_j[tool].variation;
     let sumD = W.operational * R_j[tool].operational + W.tactical * R_j[tool].tactical + W.strategic * R_j[tool].strategic;
-
     const finalScore = alpha * sumT + beta * sumC + gamma * sumD + delta * P_H[tool] + epsilon * C_k[tool];
     return { tool, score: parseFloat(finalScore.toFixed(4)) };
   }).sort((a, b) => b.score - a.score).slice(0, 3);
-
   displayResults(scores);
 }
 
 function displayResults(recommendations) {
-  const container = document.getElementById("results");
+  const container = document.getElementById("recommendation-container");
   container.innerHTML = `<h3 data-i18n='result_title'>Recommended Tools</h3>`;
   const labels = [], scores = [];
-
   recommendations.forEach(rec => {
     labels.push(rec.tool);
     scores.push(rec.score);
-    container.innerHTML += `<p><strong>${rec.tool}</strong>: Score ${rec.score}</p>`;
+    container.innerHTML += `<p><strong>${rec.tool}</strong>: <span class='score'>${rec.score}</span></p>`;
   });
-
   const canvas = document.createElement("canvas");
   canvas.id = "recommendChart";
   container.appendChild(canvas);
-
   new Chart(canvas, {
     type: 'bar',
     data: {
@@ -152,8 +188,23 @@ function displayResults(recommendations) {
     options: {
       responsive: true,
       scales: {
-        y: { beginAtZero: true, max: 10 }  // 修改最大值为1以适配小数分数
+        y: { beginAtZero: true, max: 1 }
       }
+    }
+  });
+}
+
+function startOver() {
+  document.getElementById('results').style.display = 'none';
+  document.getElementById('input').style.display = 'block';
+  showSurveyStep(1);
+  document.getElementById('company-form').reset();
+  const sliders = document.querySelectorAll('input[type="range"]');
+  sliders.forEach(slider => {
+    slider.value = 3;
+    const valueDisplay = slider.nextElementSibling;
+    if (valueDisplay && valueDisplay.classList.contains('slider-value')) {
+      valueDisplay.textContent = '3';
     }
   });
 }
