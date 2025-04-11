@@ -43,120 +43,239 @@ function prevStep() {
 
 // 收集评分并开始推荐流程
 function collectScores() {
-  document.getElementById("loading").style.display = "block";
-  document.getElementById("survey-step-3").style.display = "none";
-  document.getElementById("results").style.display = "block";
+  try {
+    document.getElementById("loading").style.display = "block";
+    document.getElementById("survey-step-3").style.display = "none";
+    document.getElementById("results").style.display = "block";
 
-  const W = {
-    cost: parseInt(document.getElementById("cost").value),
-    time: parseInt(document.getElementById("time").value),
-    quality: parseInt(document.getElementById("quality").value),
-    quantity: parseInt(document.getElementById("quantity").value),
-    location: parseInt(document.getElementById("location").value),
-    sustainable: parseInt(document.getElementById("sustainable").value),
-    risk: parseInt(document.getElementById("risk").value),
-    complexity: parseInt(document.getElementById("complexity").value),
-    conflicting: parseInt(document.getElementById("conflicting").value),
-    variation: parseInt(document.getElementById("variation").value),
-    operational: parseInt(document.getElementById("operational").value),
-    tactical: parseInt(document.getElementById("tactical").value),
-    strategic: parseInt(document.getElementById("strategic").value)
-  };
+    const W = {
+      cost: parseInt(document.getElementById("cost").value),
+      time: parseInt(document.getElementById("time").value),
+      quality: parseInt(document.getElementById("quality").value),
+      quantity: parseInt(document.getElementById("quantity").value),
+      location: parseInt(document.getElementById("location").value),
+      sustainable: parseInt(document.getElementById("sustainable").value),
+      risk: parseInt(document.getElementById("risk").value),
+      complexity: parseInt(document.getElementById("complexity").value),
+      conflicting: parseInt(document.getElementById("conflicting").value),
+      variation: parseInt(document.getElementById("variation").value),
+      operational: parseInt(document.getElementById("operational").value),
+      tactical: parseInt(document.getElementById("tactical").value),
+      strategic: parseInt(document.getElementById("strategic").value)
+    };
 
-  window.W = W;
-  loadDataAndRecommend();
+    console.log("收集的评分:", W);
+    window.W = W;
+    loadDataAndRecommend();
+  } catch (error) {
+    console.error("收集评分出错:", error);
+    document.getElementById("loading").style.display = "none";
+    alert("评分收集过程中出错，请重试。");
+  }
 }
 
 // 加载 JSON 数据并执行推荐
 function loadDataAndRecommend() {
+  // 明确获取全局 W 变量
+  const W = window.W;
+  if (!W) {
+    console.error("未能获取用户评分数据");
+    document.getElementById("loading").style.display = "none";
+    alert("未能获取评分数据，请重试。");
+    return;
+  }
+
+  console.log("开始加载JSON数据...");
+  
   Promise.all([
-    fetch("/digital-tool-recommendation/data/literature-scores.json").then(res => res.json()),
-    fetch("/digital-tool-recommendation/data/industry-preferences.json").then(res => res.json()),
-    fetch("/digital-tool-recommendation/data/enterprise-patterns.json").then(res => res.json()),
-    fetch("/digital-tool-recommendation/data/industry-cluster-distribution.json").then(res => res.json())
+    fetch("./data/literature-scores.json").then(res => {
+      if (!res.ok) throw new Error(`Literature scores: ${res.status}`);
+      return res.json();
+    }),
+    fetch("./data/industry-preferences.json").then(res => {
+      if (!res.ok) throw new Error(`Industry preferences: ${res.status}`);
+      return res.json();
+    }),
+    fetch("./data/enterprise-patterns.json").then(res => {
+      if (!res.ok) throw new Error(`Enterprise patterns: ${res.status}`);
+      return res.json();
+    }),
+    fetch("./data/industry-cluster-distribution.json").then(res => {
+      if (!res.ok) throw new Error(`Industry distribution: ${res.status}`);
+      return res.json();
+    })
   ])
     .then(([literatureScores, industryPrefs, enterprisePatterns, industryDist]) => {
-      const industry = document.getElementById("industry").value;
-      const cluster = getBestCluster(industry, industryDist);
-      const tools = Object.keys(literatureScores);
+      console.log("数据加载成功");
+      try {
+        const industry = document.getElementById("industry").value;
+        console.log("所选行业:", industry);
+        
+        const cluster = getBestCluster(industry, industryDist);
+        console.log("最佳聚类:", cluster);
+        
+        const tools = Object.keys(literatureScores);
+        console.log("可用工具:", tools);
 
-      const finalScores = tools.map(tool => {
-        const R = literatureScores[tool];
-        const P = industryPrefs[industry][tool];
-        const C = enterprisePatterns[cluster][tool];
+        if (!tools || tools.length === 0) {
+          throw new Error("无有效工具数据");
+        }
 
-        const score =
-          0.25 *
-            (W.cost * R.cost +
-             W.time * R.time +
-             W.quality * R.quality +
-             W.quantity * R.quantity +
-             W.location * R.location +
-             W.sustainable * R.sustainable) +
-          0.25 *
-            (W.risk * R.risk +
-             W.complexity * R.complexity +
-             W.conflicting * R.conflicting +
-             W.variation * R.variation) +
-          0.25 *
-            (W.operational * R.operational +
-             W.tactical * R.tactical +
-             W.strategic * R.strategic) +
-          0.15 * P +
-          0.10 * C;
+        const finalScores = tools.map(tool => {
+          console.log(`处理工具: ${tool}`);
+          try {
+            // 安全地获取数据，提供默认值防止错误
+            const R = literatureScores[tool] || {};
+            let P = 0, C = 0;
+            
+            try {
+              if (industryPrefs[industry]) {
+                P = industryPrefs[industry][tool] || 0;
+              }
+              
+              if (enterprisePatterns[cluster]) {
+                C = enterprisePatterns[cluster][tool] || 0;
+              }
+            } catch (e) {
+              console.warn(`获取工具 ${tool} 的 P/C 值出错:`, e);
+              // 继续计算，使用默认值0
+            }
 
-        return { tool, score: parseFloat(score.toFixed(2)) };
-      });
+            const sumT = (W.cost * (R.cost || 0)) +
+                        (W.time * (R.time || 0)) +
+                        (W.quality * (R.quality || 0)) +
+                        (W.quantity * (R.quantity || 0)) +
+                        (W.location * (R.location || 0)) +
+                        (W.sustainable * (R.sustainable || 0));
+                        
+            const sumC = (W.risk * (R.risk || 0)) +
+                        (W.complexity * (R.complexity || 0)) +
+                        (W.conflicting * (R.conflicting || 0)) +
+                        (W.variation * (R.variation || 0));
+                        
+            const sumD = (W.operational * (R.operational || 0)) +
+                        (W.tactical * (R.tactical || 0)) +
+                        (W.strategic * (R.strategic || 0));
 
-      finalScores.sort((a, b) => b.score - a.score);
-      renderResults(finalScores);
+            const score = 0.25 * sumT + 0.25 * sumC + 0.25 * sumD + 0.15 * P + 0.10 * C;
+            
+            console.log(`${tool} 得分:`, score);
+            return { tool, score: parseFloat(score.toFixed(4)) };
+          } catch (toolError) {
+            console.error(`处理工具 ${tool} 时出错:`, toolError);
+            return { tool, score: 0 }; // 返回0分，确保流程不中断
+          }
+        });
+
+        finalScores.sort((a, b) => b.score - a.score);
+        console.log("排序后的分数:", finalScores);
+        renderResults(finalScores);
+      } catch (error) {
+        console.error("计算推荐结果时出错:", error);
+        document.getElementById("loading").style.display = "none";
+        alert("计算推荐结果时出错: " + error.message);
+      }
+    })
+    .catch(error => {
+      console.error("加载数据出错:", error);
+      document.getElementById("loading").style.display = "none";
+      alert("无法加载必要数据: " + error.message);
     });
 }
 
 // 推荐结果展示
 function renderResults(scores) {
-  const top = scores.slice(0, 3);
-  const container = document.getElementById("recommendation-container");
-  container.innerHTML =
-    "<h3>Top 3 Recommended Tools</h3><ol>" +
-    top.map(t => `<li><strong>${t.tool}</strong> - <span class="score">${t.score}</span></li>`).join("") +
-    "</ol>";
-
-  const ctx = document.createElement("canvas");
-  container.appendChild(ctx);
-
-  new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: scores.map(s => s.tool),
-      datasets: [{
-        label: "Score",
-        data: scores.map(s => s.score)
-      }]
-    },
-    options: {
-      responsive: true,
-      scales: {
-        y: { beginAtZero: true, max: 100 }
-      }
+  try {
+    const top = scores.slice(0, 3);
+    const container = document.getElementById("recommendation-container");
+    
+    if (!container) {
+      throw new Error("未找到结果容器元素");
     }
-  });
+    
+    container.innerHTML =
+      "<h3>Top 3 Recommended Tools</h3><ol>" +
+      top.map(t => `<li><strong>${t.tool}</strong> - <span class="score">${t.score}</span></li>`).join("") +
+      "</ol>";
 
-  document.getElementById("loading").style.display = "none";
+    console.log("创建图表...");
+    const ctx = document.createElement("canvas");
+    container.appendChild(ctx);
+
+    // 最多显示所有工具，或者只显示前6个
+    const displayTools = scores.slice(0, Math.min(scores.length, 6));
+
+    new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: displayTools.map(s => s.tool),
+        datasets: [{
+          label: "Score",
+          data: displayTools.map(s => s.score),
+          backgroundColor: [
+            'rgba(75, 192, 192, 0.6)',
+            'rgba(54, 162, 235, 0.6)',
+            'rgba(153, 102, 255, 0.6)',
+            'rgba(255, 159, 64, 0.6)',
+            'rgba(255, 99, 132, 0.6)',
+            'rgba(255, 206, 86, 0.6)'
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: { 
+            beginAtZero: true, 
+            max: Math.ceil(Math.max(...scores.map(s => s.score)) * 10) / 10 // 动态设置最大值
+          }
+        }
+      }
+    });
+
+    console.log("图表创建完成");
+    document.getElementById("loading").style.display = "none";
+  } catch (error) {
+    console.error("渲染结果时出错:", error);
+    document.getElementById("loading").style.display = "none";
+    alert("无法显示结果: " + error.message);
+  }
 }
 
 // 匹配最佳企业聚类
 function getBestCluster(industry, dist) {
-  let bestCluster = null;
-  let bestProb = 0;
-  for (let cluster in dist) {
-    const prob = dist[cluster][industry] || 0;
-    if (prob > bestProb) {
-      bestCluster = cluster;
-      bestProb = prob;
+  try {
+    let bestCluster = null;
+    let bestProb = 0;
+    
+    // 安全检查
+    if (!dist || typeof dist !== 'object') {
+      console.error("无效的分布数据:", dist);
+      return "1"; // 默认返回聚类"1"
     }
+    
+    for (let cluster in dist) {
+      // 检查该聚类是否包含行业数据
+      if (dist[cluster] && dist[cluster][industry] !== undefined) {
+        const prob = dist[cluster][industry] || 0;
+        if (prob > bestProb) {
+          bestCluster = cluster;
+          bestProb = prob;
+        }
+      }
+    }
+    
+    // 如果未找到匹配，返回默认值
+    if (bestCluster === null) {
+      console.warn(`未找到行业 ${industry} 的最佳聚类，使用默认值`);
+      return "1"; // 默认返回聚类"1"
+    }
+    
+    return bestCluster;
+  } catch (error) {
+    console.error("获取最佳聚类时出错:", error);
+    return "1"; // 默认返回聚类"1"
   }
-  return bestCluster;
 }
 
 // Start Over
@@ -178,22 +297,6 @@ function startOver() {
   });
 }
 
-// 初始化 slider 显示值
-document.addEventListener("DOMContentLoaded", function () {
-  const sliders = document.querySelectorAll('input[type="range"]');
-  sliders.forEach(slider => {
-    const valueDisplay = slider.nextElementSibling;
-    if (valueDisplay && valueDisplay.classList.contains("slider-value")) {
-      valueDisplay.textContent = slider.value;
-    }
-    slider.addEventListener("input", function () {
-      const valueDisplay = this.nextElementSibling;
-      if (valueDisplay && valueDisplay.classList.contains("slider-value")) {
-        valueDisplay.textContent = this.value;
-      }
-    });
-  });
-});
 // 多语言文本资源
 const translations = {
   en: {
@@ -255,8 +358,26 @@ function switchLanguage(lang) {
   });
 }
 
-// 页面初始化语言设置
-document.addEventListener("DOMContentLoaded", () => {
+// 初始化 slider 显示值
+document.addEventListener("DOMContentLoaded", function () {
+  // 设置语言
   const savedLang = localStorage.getItem("selectedLanguage") || "en";
   switchLanguage(savedLang);
+  
+  // 初始化滑块
+  const sliders = document.querySelectorAll('input[type="range"]');
+  sliders.forEach(slider => {
+    const valueDisplay = slider.nextElementSibling;
+    if (valueDisplay && valueDisplay.classList.contains("slider-value")) {
+      valueDisplay.textContent = slider.value;
+    }
+    slider.addEventListener("input", function () {
+      const valueDisplay = this.nextElementSibling;
+      if (valueDisplay && valueDisplay.classList.contains("slider-value")) {
+        valueDisplay.textContent = this.value;
+      }
+    });
+  });
+  
+  console.log("页面初始化完成");
 });
