@@ -1,0 +1,128 @@
+{
+    "Block": {
+      "en": {
+        "fullName": "Blockchain Technology",
+        "description": "A distributed ledger technology that provides transparent, tamper-proof record-keeping for transactions and digital assets.",
+        "applications": "Supply chain traceability, smart contracts, product authentication, secure data sharing, digital identity management",
+        "cases": "Walmart using blockchain for food traceability; Maersk and IBM's TradeLens platform for shipping documentation; VeChain's work with luxury brands for anti-counterfeiting"
+      },
+      "zh": {
+        "fullName": "区块链技术",
+        "description": "一种分布式账本技术，为交易和数字资产提供透明、防篡改的记录保存。",
+        "applications": "供应链可追溯性、智能合约、产品真伪验证、安全数据共享、数字身份管理",
+        "cases": "沃尔玛使用区块链进行食品追溯；马士基和IBM的TradeLens航运文档平台；唯链与奢侈品牌合作进行防伪"
+      }
+    },
+    "BD": {
+      "en": {
+        "fullName": "Big Data Analytics",
+        "description": "Technologies and methods used to process and analyze large, complex datasets to uncover patterns, correlations, and insights.",
+        "applications": "Demand forecasting, supply chain visibility, risk identification, logistics optimization, customer segmentation",
+        "cases": "Amazon using big data for inventory and delivery optimization; UPS's ORION system for route optimization; Alibaba's smart logistics platform Cainiao"
+      },
+      "zh": {
+        "fullName": "大数据分析",
+        "description": "用于处理和分析大型复杂数据集以发现模式、关联和洞察的技术和方法。",
+        "applications": "需求预测、供应链可视化、风险识别、物流优化、客户细分",
+        "cases": "亚马逊使用大数据优化库存和配送；UPS的ORION系统优化路线；阿里巴巴的智能物流平台菜鸟"
+      }
+    },
+    "AI": {
+      "en": {
+        "fullName": "Artificial Intelligence",
+        "description": "Computer systems capable of performing tasks that typically require human intelligence, including machine learning and deep learning technologies.",
+        "applications": "Inventory management, automated planning, anomaly detection, predictive maintenance, intelligent forecasting",
+        "cases": "Unilever using AI to optimize logistics networks; P&G leveraging AI for demand forecasting; Ocado's AI-powered warehouse robots"
+      },
+      "zh": {
+        "fullName": "人工智能",
+        "description": "能够执行通常需要人类智能的任务的计算机系统，包括机器学习和深度学习技术。",
+        "applications": "库存管理、自动化计划、异常检测、预测性维护、智能预测",
+        "cases": "联合利华使用AI优化物流网络；宝洁利用AI进行需求预测；Ocado的AI驱动仓库机器人"
+      }
+    },
+    "DSS": {
+      "en": {
+        "fullName": "Decision Support Systems",
+        "description": "Interactive software-based systems intended to help managers make decisions by analyzing business data and presenting actionable information.",
+        "applications": "Supplier selection, facility location, inventory policy optimization, transportation planning, procurement strategy",
+        "cases": "DHL's supply chain risk assessment tool; Nestle's global supply chain decision-support platform; Zara's inventory management system"
+      },
+      "zh": {
+        "fullName": "决策支持系统",
+        "description": "基于软件的交互式系统，旨在通过分析业务数据并呈现可操作信息来帮助管理者做出决策。",
+        "applications": "供应商选择、设施选址、库存策略优化、运输规划、采购策略",
+        "cases": "DHL的供应链风险评估工具；雀巢的全球供应链决策支持平台；Zara的库存管理系统"
+      }
+    },
+    "AM": {
+      "en": {
+        "fullName": "Additive Manufacturing (3D Printing)",
+        "description": "Process of creating three-dimensional objects by depositing materials layer by layer based on digital models.",
+        "applications": "Rapid prototyping, spare parts production, customized manufacturing, low-volume production, complex component manufacturing",
+        "cases": "Siemens using 3D printing for gas turbine parts; GE Aviation's 3D-printed fuel nozzles; Adidas' 3D-printed shoe soles"
+      },
+      "zh": {
+        "fullName": "增材制造（3D打印）",
+        "description": "通过基于数字模型逐层沉积材料来创建三维物体的过程。",
+        "applications": "快速原型制作、备件生产、定制化制造、小批量生产、复杂零部件制造",
+        "cases": "西门子使用3D打印制造燃气轮机零件；通用电气航空的3D打印燃油喷嘴；阿迪达斯的3D打印鞋底"
+      }
+    },
+    "IoT": {
+      "en": {
+        "fullName": "Internet of Things",
+        "description": "Network of physical objects embedded with sensors, software, and other technologies to connect and exchange data with other devices and systems over the internet.",
+        "applications": "Real-time tracking, environmental monitoring, asset management, predictive maintenance, connected logistics",
+        "cases": "Caterpillar's equipment health monitoring; Rolls-Royce's engine monitoring systems; Amazon's connected warehouse technologies"
+      },
+      "zh": {
+        "fullName": "物联网",
+        "description": "嵌入传感器、软件和其他技术的物理对象网络，可通过互联网与其他设备和系统连接并交换数据。",
+        "applications": "实时跟踪、环境监测、资产管理、预测性维护、互联物流",
+        "cases": "卡特彼勒的设备健康监测；劳斯莱斯的发动机监测系统；亚马逊的互联仓库技术"
+      }
+    },
+    "Auto": {
+      "en": {
+        "fullName": "Automation & Robotics",
+        "description": "Technologies that perform tasks with reduced human intervention, including physical robots, robotic process automation, and autonomous systems.",
+        "applications": "Warehouse operations, order picking, packaging, loading/unloading, data processing, routine administrative tasks",
+        "cases": "Amazon's Kiva robots; DHL's automated sorting centers; FedEx's robotic package handling systems"
+      },
+      "zh": {
+        "fullName": "自动化与机器人",
+        "description": "以减少人工干预执行任务的技术，包括物理机器人、机器人流程自动化和自主系统。",
+        "applications": "仓库运营、订单拣选、包装、装卸、数据处理、日常行政任务",
+        "cases": "亚马逊的Kiva机器人；DHL的自动化分拣中心；联邦快递的机器人包裹处理系统"
+      }
+    },
+    "Cloud": {
+      "en": {
+        "fullName": "Cloud Computing",
+        "description": "On-demand delivery of computing services over the internet, offering flexible resources, rapid innovation, and economies of scale.",
+        "applications": "Supply chain visibility platforms, collaborative planning, transportation management systems, global inventory management, multi-enterprise networks",
+        "cases": "Procter & Gamble's cloud-based supply chain management; Nike's end-to-end supply chain platform; Coca-Cola's global supply network optimization"
+      },
+      "zh": {
+        "fullName": "云计算",
+        "description": "通过互联网按需提供计算服务，提供灵活的资源、快速创新和规模经济。",
+        "applications": "供应链可视化平台、协作规划、运输管理系统、全球库存管理、多企业网络",
+        "cases": "宝洁的基于云的供应链管理；耐克的端到端供应链平台；可口可乐的全球供应网络优化"
+      }
+    },
+    "RFID": {
+      "en": {
+        "fullName": "Radio-Frequency Identification",
+        "description": "Technology that uses electromagnetic fields to automatically identify and track tags attached to objects, storing electronic information.",
+        "applications": "Inventory tracking, asset management, anti-counterfeiting, retail stock monitoring, production process control",
+        "cases": "Walmart's RFID implementation for inventory management; Decathlon's item-level RFID tagging; BMW's production part tracking system"
+      },
+      "zh": {
+        "fullName": "射频识别",
+        "description": "使用电磁场自动识别和跟踪附着在物体上的标签并存储电子信息的技术。",
+        "applications": "库存跟踪、资产管理、防伪、零售库存监控、生产过程控制",
+        "cases": "沃尔玛的RFID库存管理实施；迪卡侬的单品级RFID标签；宝马的生产零部件跟踪系统"
+      }
+    }
+  }
