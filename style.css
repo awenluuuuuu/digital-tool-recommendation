@@ -221,3 +221,90 @@ body {
     padding: 1rem;
     margin-top: 2rem;
   }
+/* 工具卡片样式 */
+.tool-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.tool-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.tool-header h4 {
+  margin: 0;
+  color: #003366;
+}
+
+.expand-btn {
+  background: #eee;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.expand-btn:hover {
+  background: #ddd;
+}
+
+.tool-details {
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.charts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.score-breakdown, .comparison-radar {
+  flex: 1;
+  min-width: 300px;
+}
+
+.preference-chart {
+  margin-top: 30px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chart-container {
+  margin: 20px 0;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.recommendation-details {
+  margin-top: 30px;
+}
+
+/* 响应式图表容器 */
+@media (max-width: 600px) {
+  .charts-container {
+    flex-direction: column;
+  }
+  
+  .tool-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .tool-header h4, .tool-header .score, .tool-header .expand-btn {
+    margin-bottom: 8px;
+  }
+}
