@@ -102,7 +102,6 @@ function showSurveyStep(step) {
       }
     }
   });
-}
 
 // 跳转到下一页问卷
 function nextStep() {
