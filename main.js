@@ -19,19 +19,7 @@ function showSurveyStep(step) {
   }
   const current = document.getElementById(`survey-step-${step}`);
   if (current) current.style.display = "block";
-  
-  // 如果是最后一步，添加管理偏好雷达图
-  if (step === 3) {
-    drawPreferenceRadar();
-  }
 }
-
-// 绘制用户管理偏好雷达图
-function drawPreferenceRadar() {
-  // 检查是否已经存在雷达图，如果存在则不重新创建
-  if (document.getElementById('preferenceRadar')) {
-    return;
-  }
   
   // 获取所有用户输入
   const preferences = {
