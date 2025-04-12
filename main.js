@@ -365,7 +365,7 @@ function renderResults(scores, toolDetails) {
         scales: {
           y: { 
             beginAtZero: true,
-            max: 1,
+
             title: {
               display: true,
               text: matchScore
@@ -405,7 +405,7 @@ function renderResults(scores, toolDetails) {
       card.innerHTML = `
         <div class="tool-header">
           <h4>${index + 1}. ${details.fullName} (${tool.tool})</h4>
-          <span class="score">${currentLang === 'zh' ? '匹配度' : 'Match score'}: ${(tool.score * 100).toFixed(1)}%</span>
+           <span class="score">${currentLang === 'zh' ? '匹配分数' : 'Match score'}: ${tool.score.toFixed(2)}</span>
           <button class="expand-btn">${viewDetails}</button>
         </div>
         <div class="tool-details" style="display:none;">
