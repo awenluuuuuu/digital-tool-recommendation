@@ -20,88 +20,6 @@ function showSurveyStep(step) {
   const current = document.getElementById(`survey-step-${step}`);
   if (current) current.style.display = "block";
 }
-  
-  // 获取所有用户输入
-  const preferences = {
-    objectives: [
-      parseInt(document.getElementById('cost').value),
-      parseInt(document.getElementById('time').value),
-      parseInt(document.getElementById('quality').value),
-      parseInt(document.getElementById('quantity').value),
-      parseInt(document.getElementById('location').value),
-      parseInt(document.getElementById('sustainable').value)
-    ],
-    difficulties: [
-      parseInt(document.getElementById('risk').value),
-      parseInt(document.getElementById('complexity').value),
-      parseInt(document.getElementById('conflicting').value),
-      parseInt(document.getElementById('variation').value)
-    ],
-    decisionLevels: [
-      parseInt(document.getElementById('operational').value),
-      parseInt(document.getElementById('tactical').value),
-      parseInt(document.getElementById('strategic').value)
-    ]
-  };
-  
-  // 获取当前语言
-  const currentLang = localStorage.getItem('selectedLanguage') || 'en';
-  const labels = currentLang === 'zh' ? 
-    ['成本', '时间', '质量', '数量', '位置', '可持续性', '风险', '复杂性', '冲突目标', '时间变异', '运营', '战术', '战略'] :
-    ['Cost', 'Time', 'Quality', 'Quantity', 'Location', 'Sustainability', 'Risk', 'Complexity', 'Conflicting Obj.', 'Time Variation', 'Operational', 'Tactical', 'Strategic'];
-    
-  const preferenceTitle = currentLang === 'zh' ? '我的管理偏好' : 'My Management Preferences';
-  
-  // 创建雷达图容器
-  const preferenceChartContainer = document.createElement('div');
-  preferenceChartContainer.className = 'preference-chart';
-  preferenceChartContainer.innerHTML = `<h4>${preferenceTitle}</h4>`;
-  
-  const canvas = document.createElement('canvas');
-  canvas.id = 'preferenceRadar';
-  preferenceChartContainer.appendChild(canvas);
-  
-  // 添加到页面
-  document.getElementById('survey-step-3').appendChild(preferenceChartContainer);
-  
-  // 创建雷达图
-  new Chart(canvas, {
-    type: 'radar',
-    data: {
-      labels: labels,
-      datasets: [{
-        label: preferenceTitle,
-        data: [
-          ...preferences.objectives,
-          ...preferences.difficulties,
-          ...preferences.decisionLevels
-        ],
-        fill: true,
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgb(54, 162, 235)',
-        pointBackgroundColor: 'rgb(54, 162, 235)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgb(54, 162, 235)'
-      }]
-    },
-    options: {
-      elements: {
-        line: {
-          borderWidth: 3
-        }
-      },
-      scales: {
-        r: {
-          angleLines: {
-            display: true
-          },
-          suggestedMin: 0,
-          suggestedMax: 5
-        }
-      }
-    }
-  });
 
 // 跳转到下一页问卷
 function nextStep() {
@@ -373,6 +291,35 @@ function renderResults(scores, toolDetails) {
         }
       }
     });
+    
+    // 添加Score Breakdown解释
+    const breakdownExplanation = document.createElement('div');
+    breakdownExplanation.className = 'score-explanation';
+    
+    // 双语解释文本
+    const explanationTitle = currentLang === 'zh' ? '得分结构解释' : 'Score Breakdown Explanation';
+    const explanationText = currentLang === 'zh' ? 
+      `<p>每个工具的得分结构包含以下几个部分：</p>
+       <ul>
+         <li><strong>目标</strong>: 工具对您所重视的供应链管理目标(成本、时间、质量等)的满足程度</li>
+         <li><strong>难度</strong>: 工具解决您关注的供应链管理难题(风险、复杂性等)的能力</li>
+         <li><strong>决策层级</strong>: 工具支持您重视的决策层级(运营、战术、战略)的能力</li>
+         <li><strong>行业匹配</strong>: 工具与您所在行业常用模式的匹配程度</li>
+         <li><strong>企业模式</strong>: 工具与类似您企业特征的企业使用模式的匹配程度</li>
+       </ul>
+       <p>得分越高表示工具在该方面越适合您的需求。</p>` : 
+      `<p>Each tool's score breakdown includes the following components:</p>
+       <ul>
+         <li><strong>Objectives</strong>: How well the tool meets your supply chain management objectives (cost, time, quality, etc.)</li>
+         <li><strong>Difficulties</strong>: The tool's capability to address supply chain challenges you care about (risk, complexity, etc.)</li>
+         <li><strong>Decision Levels</strong>: How well the tool supports decision-making at levels important to you (operational, tactical, strategic)</li>
+         <li><strong>Industry Match</strong>: How well the tool aligns with common patterns in your industry</li>
+         <li><strong>Enterprise Pattern</strong>: How well the tool matches usage patterns of enterprises similar to yours</li>
+       </ul>
+       <p>Higher scores indicate better alignment with your needs in that area.</p>`;
+    
+    breakdownExplanation.innerHTML = `<h4>${explanationTitle}</h4>${explanationText}`;
+    container.appendChild(breakdownExplanation);
     
     // 创建详细推荐卡片
     const detailsContainer = document.createElement('div');
