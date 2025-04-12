@@ -308,3 +308,23 @@ body {
     margin-bottom: 8px;
   }
 }
+.score-explanation {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 25px;
+  border-left: 4px solid #007BFF;
+}
+
+.score-explanation h4 {
+  color: #003366;
+  margin-top: 0;
+}
+
+.score-explanation ul {
+  padding-left: 20px;
+}
+
+.score-explanation li {
+  margin-bottom: 8px;
+}
