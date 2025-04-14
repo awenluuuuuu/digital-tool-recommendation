@@ -1,0 +1,212 @@
+[
+  {
+    "Industry": "Pharmaceuticals&Chemical",
+    "Question": "How to ensure product quality traceability and anti-counterfeiting throughout the distribution chain",
+    "KPI Involved": "Product regulatory compliance rate, Production quality deviation rate, Drug accessibility",
+    "Recommended Technology": [
+      "Block",
+      "RFID"
+    ]
+  },
+  {
+    "Industry": "Pharmaceuticals&Chemical",
+    "Question": "How to enhance data collection and intelligent analysis capability in R&D processes",
+    "KPI Involved": "R&D investment ratio, Clinical trial success rate, Number and quality of patents",
+    "Recommended Technology": [
+      "AI",
+      "BD"
+    ]
+  },
+  {
+    "Industry": "Pharmaceuticals&Chemical",
+    "Question": "How to achieve precise automation and efficiency optimization in pharmaceutical processes",
+    "KPI Involved": "Capacity utilization, Energy consumption per unit, Production quality deviation rate",
+    "Recommended Technology": [
+      "Auto"
+    ]
+  },
+  {
+    "Industry": "Pharmaceuticals&Chemical",
+    "Question": "How to achieve end-to-end visibility and response speed improvement in global pharmaceutical logistics",
+    "KPI Involved": "Drug accessibility, Order fulfillment cycle, Carbon emissions",
+    "Recommended Technology": [
+      "IoT",
+      "Cloud"
+    ]
+  },
+  {
+    "Industry": "Retail",
+    "Question": "How to accurately track inventory and shelf products to reduce stockouts and overstock",
+    "KPI Involved": "Inventory accuracy, Shelf replenishment timeliness, Inventory turnover rate",
+    "Recommended Technology": [
+      "RFID",
+      "IoT"
+    ]
+  },
+  {
+    "Industry": "Retail",
+    "Question": "How to optimize promotions and product positioning through customer behavior prediction",
+    "KPI Involved": "Average transaction value, Promotion ROI, Shopping cart abandonment rate",
+    "Recommended Technology": [
+      "BD",
+      "AI"
+    ]
+  },
+  {
+    "Industry": "Retail",
+    "Question": "How to enhance inventory coordination and delivery response speed in multi-channel supply chains",
+    "KPI Involved": "Online sales proportion, Order fulfillment cycle, Carbon emissions",
+    "Recommended Technology": [
+      "Cloud",
+      "Block"
+    ]
+  },
+  {
+    "Industry": "Retail",
+    "Question": "How to improve in-store operations flexibility and automatic replenishment capability",
+    "KPI Involved": "Same-store sales growth, Warehouse space utilization, Shelf space occupancy",
+    "Recommended Technology": [
+      "Auto"
+    ]
+  },
+  {
+    "Industry": "Technology&Automobile",
+    "Question": "How to enhance customization capability and prototype development speed for complex products",
+    "KPI Involved": "Average development cycle, Product lifecycle revenue, R&D investment return",
+    "Recommended Technology": [
+      "AM",
+      "AI"
+    ]
+  },
+  {
+    "Industry": "Technology&Automobile",
+    "Question": "How to ensure secure collaboration and transparency in multinational supply chains",
+    "KPI Involved": "Patent citation rate, Product failure rate, Product safety rating",
+    "Recommended Technology": [
+      "Block",
+      "Cloud"
+    ]
+  },
+  {
+    "Industry": "Technology&Automobile",
+    "Question": "How to collect equipment data for predictive maintenance and quality improvement",
+    "KPI Involved": "Production line downtime, Product failure rate, Vehicle assembly quality index",
+    "Recommended Technology": [
+      "IoT",
+      "BD"
+    ]
+  },
+  {
+    "Industry": "Technology&Automobile",
+    "Question": "How to achieve highly flexible and precise production line automated control",
+    "KPI Involved": "OEE, Vehicle assembly quality index, Mean time between failures",
+    "Recommended Technology": [
+      "Auto"
+    ]
+  },
+  {
+    "Industry": "FMCG&Food",
+    "Question": "How to implement food quality traceability and logistics supervision",
+    "KPI Involved": "Food safety incident rate, Shelf-life return rate, Carbon emissions",
+    "Recommended Technology": [
+      "RFID",
+      "Block"
+    ]
+  },
+  {
+    "Industry": "FMCG&Food",
+    "Question": "How to optimize new product promotion and market response prediction",
+    "KPI Involved": "New product contribution rate, Brand loyalty, Price elasticity",
+    "Recommended Technology": [
+      "AI",
+      "BD"
+    ]
+  },
+  {
+    "Industry": "FMCG&Food",
+    "Question": "How to achieve intelligent inventory replenishment and distribution scheduling under high-frequency orders",
+    "KPI Involved": "Product distribution rate, Shelf-life return rate, Shelf space occupancy",
+    "Recommended Technology": [
+      "Auto",
+      "Cloud"
+    ]
+  },
+  {
+    "Industry": "FMCG&Food",
+    "Question": "How to manage sustainability indicators in packaging, warehousing, and distribution",
+    "KPI Involved": "Sustainable packaging proportion, Energy efficiency, Carbon emissions",
+    "Recommended Technology": [
+      "IoT",
+      "AM"
+    ]
+  },
+  {
+    "Industry": "Logistics",
+    "Question": "How to achieve visibility and real-time monitoring in transportation and warehousing",
+    "KPI Involved": "On-time delivery rate, Warehouse space utilization, Carbon emissions per ton-kilometer",
+    "Recommended Technology": [
+      "IoT",
+      "Cloud"
+    ]
+  },
+  {
+    "Industry": "Logistics",
+    "Question": "How to improve route optimization and coordination efficiency in trunk transportation and last-mile delivery",
+    "KPI Involved": "Cost per delivery, Average delivery time, Last-mile cost",
+    "Recommended Technology": [
+      "AI",
+      "BD"
+    ]
+  },
+  {
+    "Industry": "Logistics",
+    "Question": "How to ensure information tamper-proof and trusted sharing in transportation",
+    "KPI Involved": "Cargo damage rate, OTIF, Vehicle utilization rate",
+    "Recommended Technology": [
+      "Block"
+    ]
+  },
+  {
+    "Industry": "Logistics",
+    "Question": "How to improve automatic loading/unloading and intelligent sorting efficiency",
+    "KPI Involved": "Loading rate, Warehouse utilization, Work intensity",
+    "Recommended Technology": [
+      "Auto"
+    ]
+  },
+  {
+    "Industry": "Manufacturing",
+    "Question": "How to optimize production efficiency through equipment connectivity and data analysis",
+    "KPI Involved": "OEE, Mean time between failures, Energy consumption per unit",
+    "Recommended Technology": [
+      "IoT",
+      "BD"
+    ]
+  },
+  {
+    "Industry": "Manufacturing",
+    "Question": "How to build highly elastic and customizable flexible manufacturing systems",
+    "KPI Involved": "Production preparation time, Raw material utilization efficiency, Vehicle assembly quality",
+    "Recommended Technology": [
+      "Auto",
+      "AM"
+    ]
+  },
+  {
+    "Industry": "Manufacturing",
+    "Question": "How to implement remote collaborative design, modeling, and control",
+    "KPI Involved": "Design cycle, Production cycle efficiency, Capacity utilization",
+    "Recommended Technology": [
+      "Cloud"
+    ]
+  },
+  {
+    "Industry": "Manufacturing",
+    "Question": "How to improve quality traceability and workshop transparency management",
+    "KPI Involved": "Quality pass rate, Production quality deviation rate, Energy consumption",
+    "Recommended Technology": [
+      "RFID",
+      "Block"
+    ]
+  }
+]
