@@ -32,7 +32,7 @@
           <select id="industry" name="industry" required>
             <option value="Pharmaceuticals&Chemical">Pharmaceuticals & Chemical</option>
             <option value="Retail">Retail</option>
-            <option value="Technology&Automotive">Technology & Automotive</option>
+            <option value="Technology&Automobile">Technology & Automotive</option>
             <option value="FMCG&Food">FMCG & Food</option>
             <option value="Logistics">Logistics</option>
             <option value="Manufacturing">Manufacturing</option>
@@ -79,6 +79,7 @@
         <div class="slider-group"><label for="conflicting">Conflicting Objectives</label><input type="range" id="conflicting" min="1" max="5" value="3" /><span class="slider-value">3</span></div>
         <div class="slider-group"><label for="variation">Variation Over Time</label><input type="range" id="variation" min="1" max="5" value="3" /><span class="slider-value">3</span></div>
       </div>
+      
       <div class="button-group">
         <button type="button" class="secondary-button" onclick="prevStep()" data-i18n="back">Back</button>
         <button type="button" class="primary-button" onclick="nextStep()" data-i18n="next">Next</button>
@@ -92,6 +93,12 @@
         <div class="slider-group"><label for="tactical">Tactical</label><input type="range" id="tactical" min="1" max="5" value="3" /><span class="slider-value">3</span></div>
         <div class="slider-group"><label for="strategic">Strategic</label><input type="range" id="strategic" min="1" max="5" value="3" /><span class="slider-value">3</span></div>
       </div>
+      
+      <div class="radio-group" id="custom-radio-question">
+        <h4 data-i18n="custom_radio_title">Please choose the most relevant challenge your enterprise is facing:</h4>
+        <!-- Radio buttons will be inserted dynamically by main.js -->
+      </div>
+
       <div class="button-group">
         <button type="button" class="secondary-button" onclick="prevStep()" data-i18n="back">Back</button>
         <button type="button" class="primary-button" onclick="collectScores()" data-i18n="submit">Submit</button>
