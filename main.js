@@ -260,6 +260,9 @@ function loadDataAndRecommend() {
           }
         }
 
+        // Initialize scores object to store final scores
+        let S = {};
+        
         const finalScores = tools.map(tool => {
           console.log(`处理工具: ${tool}`);
           try {
@@ -279,63 +282,61 @@ function loadDataAndRecommend() {
               console.warn(`获取工具 ${tool} 的 P/C 值出错:`, e);
               // 继续计算，使用默认值0
             }
+            
+            // Step 1: 计算维度得分
+            const sumT = (W.cost * (R.cost || 0)) +
+                          (W.time * (R.time || 0)) +
+                          (W.quality * (R.quality || 0)) +
+                          (W.quantity * (R.quantity || 0)) +
+                          (W.location * (R.location || 0)) +
+                          (W.sustainable * (R.sustainable || 0));
 
-const zeta = 1; // 加强 KPI 因素权重
-const penaltyMap = {
-  "DSS": 0.5,
-  "AM": 0.8,
-  "Auto": 0.8
-};
+            const sumC = (W.risk * (R.risk || 0)) +
+                          (W.complexity * (R.complexity || 0)) +
+                          (W.conflicting * (R.conflicting || 0)) +
+                          (W.variation * (R.variation || 0));
 
-tools.forEach(tool => {
-    const R = literatureScores[tool] || {};
-    const P = industryPreferences[tool] || 0;
-    const C = clusterMatchScores[tool] || 0;
-    const m = M[tool] || 0;
-
-    // Step 1: 计算维度得分
-    const sumT = (W.cost * (R.cost || 0)) +
-                (W.time * (R.time || 0)) +
-                (W.quality * (R.quality || 0)) +
-                (W.quantity * (R.quantity || 0)) +
-                (W.location * (R.location || 0)) +
-                (W.sustainable * (R.sustainable || 0));
-
-    const sumC = (W.risk * (R.risk || 0)) +
-                (W.complexity * (R.complexity || 0)) +
-                (W.conflicting * (R.conflicting || 0)) +
-                (W.variation * (R.variation || 0));
-
-    const sumD = (W.operational * (R.operational || 0)) +
-                (W.tactical * (R.tactical || 0)) +
-                (W.strategic * (R.strategic || 0));
-
-    // Step 2: 得出主公式中 M 之前的部分
-    let scoreWithoutM = 0.20 * sumT + 0.20 * sumC + 0.20 * sumD + 0.20 * P + 0.20 * C;
-
-    // Step 3: 应用惩罚系数
-    const penalty = penaltyMap[tool] || 1;
-    scoreWithoutM *= penalty;
-
-    // Step 4: 加上 M 部分（不受惩罚影响）
-    const score = scoreWithoutM + zeta * m;
-
-    // 输出结果
-    S[tool] = score;
-
-    console.log(`工具 ${tool} 的惩罚前得分:`, scoreWithoutM);
-    console.log(`M 值为:`, m);
-    console.log(`最终得分为:`, score);
-});
-
-// 保存得分细分
+            const sumD = (W.operational * (R.operational || 0)) +
+                          (W.tactical * (R.tactical || 0)) +
+                          (W.strategic * (R.strategic || 0));
+            
+            // Calculate normalized sub-scores
+            const objectivesScore = sumT / (W.cost + W.time + W.quality + W.quantity + W.location + W.sustainable);
+            const difficultiesScore = sumC / (W.risk + W.complexity + W.conflicting + W.variation);
+            const decisionsScore = sumD / (W.operational + W.tactical + W.strategic);
+            
+            const zeta = 1; // 加强 KPI 因素权重
+            const penaltyMap = {
+              "DSS": 0.5,
+              "AM": 0.8,
+              "Auto": 0.8
+            };
+            
+            // Step 2: 得出主公式中 M 之前的部分
+            let scoreWithoutM = 0.20 * sumT + 0.20 * sumC + 0.20 * sumD + 0.20 * P + 0.20 * C;
+            
+            // Step 3: 应用惩罚系数
+            const penalty = penaltyMap[tool] || 1;
+            scoreWithoutM *= penalty;
+            
+            // Step 4: 加上 M 部分（不受惩罚影响）
+            const score = scoreWithoutM + zeta * (M[tool] || 0);
+            
+            // 保存到分数对象
+            S[tool] = score;
+            
+            console.log(`工具 ${tool} 的惩罚前得分:`, scoreWithoutM);
+            console.log(`M 值为:`, M[tool] || 0);
+            console.log(`最终得分为:`, score);
+            
+            // 保存得分细分
             const scoreBreakdown = {
               objectives: objectivesScore,
               difficulties: difficultiesScore,
               decisions: decisionsScore,
               industry: P,
               enterprise: C,
-              kpi: M[tool] // Include M value in the breakdown
+              kpi: M[tool] || 0 // Include M value in the breakdown
             };
             
             // 创建工具能力对象 (用于雷达图)
@@ -447,7 +448,6 @@ function renderResults(scores, toolDetails) {
         scales: {
           y: { 
             beginAtZero: true,
-
             title: {
               display: true,
               text: matchScore
