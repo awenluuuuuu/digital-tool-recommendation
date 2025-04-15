@@ -304,7 +304,7 @@ function loadDataAndRecommend() {
 
             // New formula with zeta * M component
             const zeta = 0.1; // Weight for the KPI question factor
-            const score = 0.25 * sumT + 0.25 * sumC + 0.25 * sumD + 0.15 * P + 0.10 * C + zeta * M[tool];
+            const score = 0.20 * sumT + 0.20 * sumC + 0.20 * sumD + 0.20 * P + 0.20 * C + zeta * M[tool];
             
             console.log(`工具 ${tool} 的M值:`, M[tool]);
             console.log(`工具 ${tool} 的zeta成分:`, zeta * M[tool]);
