@@ -1,3 +1,73 @@
+// Global variables
+let customQuestionData = [];
+
+// Dynamically populate radio options for the custom KPI question
+function loadCustomQuestionOptions(language) {
+  const container = document.getElementById("custom-radio-question");
+  if (!container) return;
+  
+  // Clear previous content except the heading
+  const heading = container.querySelector("h4");
+  container.innerHTML = "";
+  container.appendChild(heading);
+  
+  const questionData = window.customQuestionData || [];
+  
+  // Update the heading text
+  const translatedTitle = language === 'zh'
+    ? "请选择当前企业面临的最突出挑战："
+    : "Please choose the most relevant challenge your enterprise is facing:";
+  heading.textContent = translatedTitle;
+
+  // Create radio inputs for each question
+  const radioGroup = document.createElement("div");
+  radioGroup.className = "radio-options";
+  
+  questionData.forEach((q, idx) => {
+    const label = document.createElement("label");
+    label.className = "radio-label";
+    
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "customKPI";
+    input.value = `q_${idx}`;
+    input.required = true;
+    if (idx === 0) input.checked = true; // Select first option by default
+    
+    const text = document.createTextNode(language === 'zh' 
+      ? q.Question_zh
+      : q.Question);
+    
+    label.appendChild(input);
+    label.appendChild(text);
+    radioGroup.appendChild(label);
+  });
+  
+  container.appendChild(radioGroup);
+}
+
+// Track language change and reload radio options
+function switchLanguage(lang) {
+  document.documentElement.lang = lang;
+  localStorage.setItem('selectedLanguage', lang);
+  
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.getAttribute('data-i18n');
+    if (translations[lang] && translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+  
+  // Re-render radio options with new language
+  loadCustomQuestionOptions(lang);
+  
+  // Update result content if visible
+  if (document.getElementById("results").style.display === "block" &&
+      window.currentScores && window.currentToolDetails) {
+    renderResults(window.currentScores, window.currentToolDetails);
+  }
+}
+
 // 页面跳转：首页 -> 公司信息页
 function scrollToCompanyInfo() {
   document.getElementById("home").style.display = "none";
@@ -7,8 +77,34 @@ function scrollToCompanyInfo() {
 
 // 开始评分流程
 function startSurvey() {
-  document.getElementById("company-info").style.display = "none";
-  showSurveyStep(1);
+  const industry = document.getElementById("industry").value;
+  
+  // Load industry-specific questions
+  fetch("./data/industry_kpi_question.json")
+    .then(res => res.json())
+    .then(data => {
+      // Process and filter data by industry
+      const processedData = data.map((item, index) => ({
+        ...item,
+        id: `q_${index}`
+      }));
+      
+      const industryQuestions = processedData.filter(q => q.Industry === industry);
+      window.customQuestionData = industryQuestions;
+      
+      // Update the UI
+      const currentLang = localStorage.getItem("selectedLanguage") || "en";
+      
+      // Continue with the survey
+      document.getElementById("company-info").style.display = "none";
+      showSurveyStep(1);
+    })
+    .catch(error => {
+      console.error("Error loading questions:", error);
+      // Continue anyway
+      document.getElementById("company-info").style.display = "none";
+      showSurveyStep(1);
+    });
 }
 
 // 显示第 step 页评分问卷
@@ -19,6 +115,12 @@ function showSurveyStep(step) {
   }
   const current = document.getElementById(`survey-step-${step}`);
   if (current) current.style.display = "block";
+  
+  // If at step 3, load the custom KPI questions
+  if (step === 3) {
+    const currentLang = localStorage.getItem("selectedLanguage") || "en";
+    loadCustomQuestionOptions(currentLang);
+  }
 }
 
 // 跳转到下一页问卷
@@ -107,9 +209,13 @@ function loadDataAndRecommend() {
     fetch("./data/tool-details.json").then(res => {
       if (!res.ok) throw new Error(`Tool details: ${res.status}`);
       return res.json();
+    }),
+    fetch("./data/industry_kpi_question.json").then(res => {
+      if (!res.ok) throw new Error(`Industry KPI questions: ${res.status}`);
+      return res.json();
     })
   ])
-    .then(([literatureScores, industryPrefs, enterprisePatterns, industryDist, toolDetails]) => {
+    .then(([literatureScores, industryPrefs, enterprisePatterns, industryDist, toolDetails, kpiQuestions]) => {
       console.log("数据加载成功");
       try {
         const industry = document.getElementById("industry").value;
@@ -123,6 +229,35 @@ function loadDataAndRecommend() {
 
         if (!tools || tools.length === 0) {
           throw new Error("无有效工具数据");
+        }
+        
+        // Get selected KPI question
+        const selectedQuestionEl = document.querySelector('input[name="customKPI"]:checked');
+        let M = {}; // Initialize M values for all tools as 0
+        tools.forEach(tool => M[tool] = 0); // Default to 0
+        
+        // If a question is selected, set M=1 for recommended technologies
+        if (selectedQuestionEl && selectedQuestionEl.value) {
+          const questionId = selectedQuestionEl.value;
+          const questionIndex = parseInt(questionId.replace('q_', ''));
+          
+          // Find the industry questions
+          const industryQuestions = kpiQuestions.filter(q => q.Industry === industry);
+          
+          if (industryQuestions.length > questionIndex) {
+            const questionData = industryQuestions[questionIndex];
+            console.log("Selected question:", questionData.Question);
+            
+            if (questionData && questionData["Recommended Technology"]) {
+              // Set M=1 for each recommended technology
+              questionData["Recommended Technology"].forEach(tech => {
+                if (tools.includes(tech)) {
+                  M[tech] = 1;
+                  console.log(`Setting M=1 for ${tech} based on selected question`);
+                }
+              });
+            }
+          }
         }
 
         const finalScores = tools.map(tool => {
@@ -167,15 +302,21 @@ function loadDataAndRecommend() {
             const difficultiesScore = sumC / 20; // 4个难度，每个最高5分
             const decisionsScore = sumD / 15; // 3个决策层级，每个最高5分
 
-            const score = 0.25 * sumT + 0.25 * sumC + 0.25 * sumD + 0.15 * P + 0.10 * C;
+            // New formula with zeta * M component
+            const zeta = 0.1; // Weight for the KPI question factor
+            const score = 0.25 * sumT + 0.25 * sumC + 0.25 * sumD + 0.15 * P + 0.10 * C + zeta * M[tool];
             
-            // 保存得分细分
+            console.log(`工具 ${tool} 的M值:`, M[tool]);
+            console.log(`工具 ${tool} 的zeta成分:`, zeta * M[tool]);
+
+// 保存得分细分
             const scoreBreakdown = {
               objectives: objectivesScore,
               difficulties: difficultiesScore,
               decisions: decisionsScore,
               industry: P,
-              enterprise: C
+              enterprise: C,
+              kpi: M[tool] // Include M value in the breakdown
             };
             
             // 创建工具能力对象 (用于雷达图)
@@ -203,6 +344,11 @@ function loadDataAndRecommend() {
 
         finalScores.sort((a, b) => b.score - a.score);
         console.log("排序后的分数:", finalScores);
+        
+        // Save scores for language switching
+        window.currentScores = finalScores;
+        window.currentToolDetails = toolDetails;
+        
         renderResults(finalScores, toolDetails);
       } catch (error) {
         console.error("计算推荐结果时出错:", error);
@@ -306,6 +452,7 @@ function renderResults(scores, toolDetails) {
          <li><strong>决策层级</strong>: 工具支持您重视的决策层级(运营、战术、战略)的能力</li>
          <li><strong>行业匹配</strong>: 工具与您所在行业常用模式的匹配程度</li>
          <li><strong>企业模式</strong>: 工具与类似您企业特征的企业使用模式的匹配程度</li>
+         <li><strong>关键问题</strong>: 工具解决您选择的关键挑战的适用性</li>
        </ul>
        <p>得分越高表示工具在该方面越适合您的需求。</p>` : 
       `<p>Each tool's score breakdown includes the following components:</p>
@@ -315,6 +462,7 @@ function renderResults(scores, toolDetails) {
          <li><strong>Decision Levels</strong>: How well the tool supports decision-making at levels important to you (operational, tactical, strategic)</li>
          <li><strong>Industry Match</strong>: How well the tool aligns with common patterns in your industry</li>
          <li><strong>Enterprise Pattern</strong>: How well the tool matches usage patterns of enterprises similar to yours</li>
+         <li><strong>Key Challenge</strong>: The tool's suitability for addressing the specific challenge you selected</li>
        </ul>
        <p>Higher scores indicate better alignment with your needs in that area.</p>`;
     
@@ -408,7 +556,8 @@ function createScoreBreakdownChart(toolId, breakdown, lang) {
     difficulties: 0.68,
     decisions: 0.82,
     industry: 0.79,
-    enterprise: 0.64
+    enterprise: 0.64,
+    kpi: 0.0
   };
   
   const canvas = document.getElementById(`breakdown-${toolId}`);
@@ -416,8 +565,8 @@ function createScoreBreakdownChart(toolId, breakdown, lang) {
   
   // 准备标签
   const labels = lang === 'zh' ? 
-    ['目标', '难度', '决策层级', '行业匹配', '企业模式'] :
-    ['Objectives', 'Difficulties', 'Decision Levels', 'Industry Match', 'Enterprise Pattern'];
+    ['目标', '难度', '决策层级', '行业匹配', '企业模式', '关键问题'] :
+    ['Objectives', 'Difficulties', 'Decision Levels', 'Industry Match', 'Enterprise Pattern', 'Key Challenge'];
   
   new Chart(canvas, {
     type: 'bar',
@@ -431,7 +580,8 @@ function createScoreBreakdownChart(toolId, breakdown, lang) {
           'rgba(54, 162, 235, 0.7)',
           'rgba(255, 206, 86, 0.7)',
           'rgba(75, 192, 192, 0.7)',
-          'rgba(153, 102, 255, 0.7)'
+          'rgba(153, 102, 255, 0.7)',
+          'rgba(255, 159, 64, 0.7)'
         ]
       }]
     },
@@ -599,6 +749,7 @@ const translations = {
     obj_q: "Please rate the importance of the following supply chain objectives for your company.",
     diff_q: "Please rate the importance of addressing the following supply chain difficulties.",
     dec_q: "Please rate the importance of the following supply chain decision-making levels.",
+    custom_radio_title: "Please choose the most relevant challenge your enterprise is facing:",
     next: "Next",
     back: "Back",
     submit: "Submit",
@@ -619,6 +770,7 @@ const translations = {
     obj_q: "请根据您公司的实际情况，评估完成以下各供应链管理目标的重要程度。",
     diff_q: "请根据您公司的实际情况，评估解决以下各供应链管理困难的重要程度。",
     dec_q: "根据您公司的实际情况，请您对以下各供应链管理决策层级的重视程度。",
+    custom_radio_title: "请选择当前企业面临的最突出挑战：",
     next: "下一步",
     back: "上一步",
     submit: "提交",
@@ -627,23 +779,6 @@ const translations = {
     contact: "联系我们：awenlu@outlook.com"
   }
 };
-
-// 切换语言函数
-function switchLanguage(lang) {
-  localStorage.setItem("selectedLanguage", lang);
-  const elements = document.querySelectorAll("[data-i18n]");
-  elements.forEach(el => {
-    const key = el.getAttribute("data-i18n");
-    if (translations[lang][key]) {
-      el.textContent = translations[lang][key];
-    }
-  });
-
-  // 切换按钮状态
-  document.querySelectorAll("nav button").forEach(btn => {
-    btn.setAttribute("aria-pressed", btn.textContent === (lang === "zh" ? "中文" : "EN"));
-  });
-}
 
 // 初始化 slider 显示值
 document.addEventListener("DOMContentLoaded", function () {
