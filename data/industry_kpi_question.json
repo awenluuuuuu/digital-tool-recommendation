@@ -2,6 +2,7 @@
   {
     "Industry": "Pharmaceuticals&Chemical",
     "Question": "How to ensure product quality traceability and anti-counterfeiting throughout the distribution chain",
+    "Question_zh": "如何确保产品在整个流通链条中的质量追溯和防伪",
     "KPI Involved": "Product regulatory compliance rate, Production quality deviation rate, Drug accessibility",
     "Recommended Technology": [
       "Block",
@@ -11,6 +12,7 @@
   {
     "Industry": "Pharmaceuticals&Chemical",
     "Question": "How to enhance data collection and intelligent analysis capability in R&D processes",
+    "Question_zh": "如何提升研发流程的数据采集与智能化分析能力",
     "KPI Involved": "R&D investment ratio, Clinical trial success rate, Number and quality of patents",
     "Recommended Technology": [
       "AI",
@@ -20,6 +22,7 @@
   {
     "Industry": "Pharmaceuticals&Chemical",
     "Question": "How to achieve precise automation and efficiency optimization in pharmaceutical processes",
+    "Question_zh": "如何实现制药流程的精准自动化与效率优化",
     "KPI Involved": "Capacity utilization, Energy consumption per unit, Production quality deviation rate",
     "Recommended Technology": [
       "Auto"
@@ -28,6 +31,7 @@
   {
     "Industry": "Pharmaceuticals&Chemical",
     "Question": "How to achieve end-to-end visibility and response speed improvement in global pharmaceutical logistics",
+    "Question_zh": "如何实现全球药品物流的全流程可视化与响应速度提升",
     "KPI Involved": "Drug accessibility, Order fulfillment cycle, Carbon emissions",
     "Recommended Technology": [
       "IoT",
@@ -37,6 +41,7 @@
   {
     "Industry": "Retail",
     "Question": "How to accurately track inventory and shelf products to reduce stockouts and overstock",
+    "Question_zh": "如何精准追踪库存与货架商品，降低缺货与积压",
     "KPI Involved": "Inventory accuracy, Shelf replenishment timeliness, Inventory turnover rate",
     "Recommended Technology": [
       "RFID",
@@ -46,6 +51,7 @@
   {
     "Industry": "Retail",
     "Question": "How to optimize promotions and product positioning through customer behavior prediction",
+    "Question_zh": "如何通过顾客行为预测进行促销优化与产品定位",
     "KPI Involved": "Average transaction value, Promotion ROI, Shopping cart abandonment rate",
     "Recommended Technology": [
       "BD",
@@ -55,6 +61,7 @@
   {
     "Industry": "Retail",
     "Question": "How to enhance inventory coordination and delivery response speed in multi-channel supply chains",
+    "Question_zh": "如何提升多渠道供应链的库存协同与配送反应速度",
     "KPI Involved": "Online sales proportion, Order fulfillment cycle, Carbon emissions",
     "Recommended Technology": [
       "Cloud",
@@ -64,6 +71,7 @@
   {
     "Industry": "Retail",
     "Question": "How to improve in-store operations flexibility and automatic replenishment capability",
+    "Question_zh": "如何提升店内运营的柔性化与自动补货能力",
     "KPI Involved": "Same-store sales growth, Warehouse space utilization, Shelf space occupancy",
     "Recommended Technology": [
       "Auto"
@@ -72,6 +80,7 @@
   {
     "Industry": "Technology&Automobile",
     "Question": "How to enhance customization capability and prototype development speed for complex products",
+    "Question_zh": "如何提升复杂产品的定制化能力和原型开发速度",
     "KPI Involved": "Average development cycle, Product lifecycle revenue, R&D investment return",
     "Recommended Technology": [
       "AM",
@@ -81,6 +90,7 @@
   {
     "Industry": "Technology&Automobile",
     "Question": "How to ensure secure collaboration and transparency in multinational supply chains",
+    "Question_zh": "如何保障跨国供应链的安全协同与透明化",
     "KPI Involved": "Patent citation rate, Product failure rate, Product safety rating",
     "Recommended Technology": [
       "Block",
@@ -90,6 +100,7 @@
   {
     "Industry": "Technology&Automobile",
     "Question": "How to collect equipment data for predictive maintenance and quality improvement",
+    "Question_zh": "如何采集设备数据以预测性维护与质量提升",
     "KPI Involved": "Production line downtime, Product failure rate, Vehicle assembly quality index",
     "Recommended Technology": [
       "IoT",
@@ -99,6 +110,7 @@
   {
     "Industry": "Technology&Automobile",
     "Question": "How to achieve highly flexible and precise production line automated control",
+    "Question_zh": "如何实现高度柔性和高精度的生产线自动控制",
     "KPI Involved": "OEE, Vehicle assembly quality index, Mean time between failures",
     "Recommended Technology": [
       "Auto"
@@ -107,6 +119,7 @@
   {
     "Industry": "FMCG&Food",
     "Question": "How to implement food quality traceability and logistics supervision",
+    "Question_zh": "如何实现食品质量追溯与物流监管",
     "KPI Involved": "Food safety incident rate, Shelf-life return rate, Carbon emissions",
     "Recommended Technology": [
       "RFID",
@@ -116,6 +129,7 @@
   {
     "Industry": "FMCG&Food",
     "Question": "How to optimize new product promotion and market response prediction",
+    "Question_zh": "如何优化新品推广与市场反应预测",
     "KPI Involved": "New product contribution rate, Brand loyalty, Price elasticity",
     "Recommended Technology": [
       "AI",
@@ -125,6 +139,7 @@
   {
     "Industry": "FMCG&Food",
     "Question": "How to achieve intelligent inventory replenishment and distribution scheduling under high-frequency orders",
+    "Question_zh": "如何实现高频订单下的智能库存补货与分销调度",
     "KPI Involved": "Product distribution rate, Shelf-life return rate, Shelf space occupancy",
     "Recommended Technology": [
       "Auto",
@@ -134,6 +149,7 @@
   {
     "Industry": "FMCG&Food",
     "Question": "How to manage sustainability indicators in packaging, warehousing, and distribution",
+    "Question_zh": "如何管控包装、仓储、配送环节的可持续性指标",
     "KPI Involved": "Sustainable packaging proportion, Energy efficiency, Carbon emissions",
     "Recommended Technology": [
       "IoT",
@@ -143,6 +159,7 @@
   {
     "Industry": "Logistics",
     "Question": "How to achieve visibility and real-time monitoring in transportation and warehousing",
+    "Question_zh": "如何实现运输、仓储环节的可视化与实时监控",
     "KPI Involved": "On-time delivery rate, Warehouse space utilization, Carbon emissions per ton-kilometer",
     "Recommended Technology": [
       "IoT",
@@ -152,6 +169,7 @@
   {
     "Industry": "Logistics",
     "Question": "How to improve route optimization and coordination efficiency in trunk transportation and last-mile delivery",
+    "Question_zh": "如何提升千线运输与末端配送的路径优化与协同效率",
     "KPI Involved": "Cost per delivery, Average delivery time, Last-mile cost",
     "Recommended Technology": [
       "AI",
@@ -161,6 +179,7 @@
   {
     "Industry": "Logistics",
     "Question": "How to ensure information tamper-proof and trusted sharing in transportation",
+    "Question_zh": "如何保障运输环节的信息防篡改与可信共享",
     "KPI Involved": "Cargo damage rate, OTIF, Vehicle utilization rate",
     "Recommended Technology": [
       "Block"
@@ -169,6 +188,7 @@
   {
     "Industry": "Logistics",
     "Question": "How to improve automatic loading/unloading and intelligent sorting efficiency",
+    "Question_zh": "如何提升自动装卸与智能分拣作业效率",
     "KPI Involved": "Loading rate, Warehouse utilization, Work intensity",
     "Recommended Technology": [
       "Auto"
@@ -177,6 +197,7 @@
   {
     "Industry": "Manufacturing",
     "Question": "How to optimize production efficiency through equipment connectivity and data analysis",
+    "Question_zh": "如何通过设备连接与数据分析优化生产效率",
     "KPI Involved": "OEE, Mean time between failures, Energy consumption per unit",
     "Recommended Technology": [
       "IoT",
@@ -186,6 +207,7 @@
   {
     "Industry": "Manufacturing",
     "Question": "How to build highly elastic and customizable flexible manufacturing systems",
+    "Question_zh": "如何构建高弹性、高定制化的柔性制造系统",
     "KPI Involved": "Production preparation time, Raw material utilization efficiency, Vehicle assembly quality",
     "Recommended Technology": [
       "Auto",
@@ -195,6 +217,7 @@
   {
     "Industry": "Manufacturing",
     "Question": "How to implement remote collaborative design, modeling, and control",
+    "Question_zh": "如何进行远程协同设计、建模与控制",
     "KPI Involved": "Design cycle, Production cycle efficiency, Capacity utilization",
     "Recommended Technology": [
       "Cloud"
@@ -203,6 +226,7 @@
   {
     "Industry": "Manufacturing",
     "Question": "How to improve quality traceability and workshop transparency management",
+    "Question_zh": "如何提升质量可追溯与车间透明化管理",
     "KPI Involved": "Quality pass rate, Production quality deviation rate, Energy consumption",
     "Recommended Technology": [
       "RFID",
