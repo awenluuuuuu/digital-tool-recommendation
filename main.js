@@ -280,34 +280,53 @@ function loadDataAndRecommend() {
               // 继续计算，使用默认值0
             }
 
-            // 计算各类得分
-            const sumT = (W.cost * (R.cost || 0)) +
-                        (W.time * (R.time || 0)) +
-                        (W.quality * (R.quality || 0)) +
-                        (W.quantity * (R.quantity || 0)) +
-                        (W.location * (R.location || 0)) +
-                        (W.sustainable * (R.sustainable || 0));
-                        
-            const sumC = (W.risk * (R.risk || 0)) +
-                        (W.complexity * (R.complexity || 0)) +
-                        (W.conflicting * (R.conflicting || 0)) +
-                        (W.variation * (R.variation || 0));
-                        
-            const sumD = (W.operational * (R.operational || 0)) +
-                        (W.tactical * (R.tactical || 0)) +
-                        (W.strategic * (R.strategic || 0));
-            
-            // 标准化各部分得分
-            const objectivesScore = sumT / 30; // 6个目标，每个最高5分
-            const difficultiesScore = sumC / 20; // 4个难度，每个最高5分
-            const decisionsScore = sumD / 15; // 3个决策层级，每个最高5分
+const zeta = 1; // 加强 KPI 因素权重
+const penaltyMap = {
+  "DSS": 0.5,
+  "AM": 0.8,
+  "Auto": 0.8
+};
 
-            // New formula with zeta * M component
-            const zeta = 0.1; // Weight for the KPI question factor
-            const score = 0.20 * sumT + 0.20 * sumC + 0.20 * sumD + 0.20 * P + 0.20 * C + zeta * M[tool];
-            
-            console.log(`工具 ${tool} 的M值:`, M[tool]);
-            console.log(`工具 ${tool} 的zeta成分:`, zeta * M[tool]);
+tools.forEach(tool => {
+    const R = literatureScores[tool] || {};
+    const P = industryPreferences[tool] || 0;
+    const C = clusterMatchScores[tool] || 0;
+    const m = M[tool] || 0;
+
+    // Step 1: 计算维度得分
+    const sumT = (W.cost * (R.cost || 0)) +
+                (W.time * (R.time || 0)) +
+                (W.quality * (R.quality || 0)) +
+                (W.quantity * (R.quantity || 0)) +
+                (W.location * (R.location || 0)) +
+                (W.sustainable * (R.sustainable || 0));
+
+    const sumC = (W.risk * (R.risk || 0)) +
+                (W.complexity * (R.complexity || 0)) +
+                (W.conflicting * (R.conflicting || 0)) +
+                (W.variation * (R.variation || 0));
+
+    const sumD = (W.operational * (R.operational || 0)) +
+                (W.tactical * (R.tactical || 0)) +
+                (W.strategic * (R.strategic || 0));
+
+    // Step 2: 得出主公式中 M 之前的部分
+    let scoreWithoutM = 0.20 * sumT + 0.20 * sumC + 0.20 * sumD + 0.20 * P + 0.20 * C;
+
+    // Step 3: 应用惩罚系数
+    const penalty = penaltyMap[tool] || 1;
+    scoreWithoutM *= penalty;
+
+    // Step 4: 加上 M 部分（不受惩罚影响）
+    const score = scoreWithoutM + zeta * m;
+
+    // 输出结果
+    S[tool] = score;
+
+    console.log(`工具 ${tool} 的惩罚前得分:`, scoreWithoutM);
+    console.log(`M 值为:`, m);
+    console.log(`最终得分为:`, score);
+});
 
 // 保存得分细分
             const scoreBreakdown = {
