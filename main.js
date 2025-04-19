@@ -309,7 +309,7 @@ function loadDataAndRecommend() {
             const penaltyMap = {
               "DSS": 0.5,
               "AM": 0.75,
-              "AI": 0.85,
+              "AI": 0.9,
               "Auto": 0.75
             };
             
