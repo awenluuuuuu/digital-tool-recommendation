@@ -308,9 +308,9 @@ function loadDataAndRecommend() {
             const zeta = 1; // 加强 KPI 因素权重
             const penaltyMap = {
               "DSS": 0.5,
-              "AM": 0.7,
-              "AI": 0.8,
-              "Auto": 0.7
+              "AM": 0.75,
+              "AI": 0.85,
+              "Auto": 0.75
             };
             
             // Step 2: 得出主公式中 M 之前的部分
